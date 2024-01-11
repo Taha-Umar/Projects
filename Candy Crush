@@ -1,0 +1,213 @@
+#include<iostream>
+#include<conio.h>
+#include<windows.h>
+using namespace std;
+
+char candy = 219;
+
+void Color(int color)
+{
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+
+int Random_Color_generator() {
+	int Colors[8] = { 1,2,3,4,5,6,7,8 };
+	int random;
+	//srand(ftime(NULL) + rand());
+	random = Colors[rand() % 8];
+	return random;
+}
+
+void update(int arr[8][8], int score) {
+	system("CLS");
+	int number = 1;
+	char wall = 177;
+	Color(7);
+	for (int i = 0; i < 73; i++) {
+		cout << wall;
+	}
+	cout << endl << wall << "									" << wall << endl;
+	for (int i = 0; i < 8; i++) {
+		cout << wall << "  ";
+		for (int j = 0; j < 8; j++) {
+			Color(arr[i][j]);
+			if (j != 7) {
+				cout << candy << candy << number++ << "	";
+			}
+			if (j == 7) {
+				cout << candy << candy << number++ << "	";
+				Color(7);
+				cout << "	" << wall;
+			}
+			Color(7);
+			if (i == 1 && j == 7) {
+				cout << "	-------------";
+			}
+			if (i == 2 && j == 7) {
+				Color(7);
+				cout << "	| SCORE : " << score << " |";
+			}
+			if (i == 3 && j == 7) {
+				cout << "	-------------";
+			}
+			if (i == 6 && j == 7) {
+				cout << "	* * Enter -1 to exit ! * *";
+			}
+		}
+		Color(7);
+		cout << endl << wall << "									" << wall << endl << wall << "									" << wall << endl;
+	}
+	for (int i = 0; i < 73; i++) {
+		cout << wall;
+	}
+	cout << endl << endl;
+}
+
+int check(int arr[8][8], int score) {
+	int temp, counter = 0;
+	//Generating new candies if 3 Colors are same
+	//FOR HORIZONTAL
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (arr[i][j] == arr[i][j + 1] && arr[i][j + 1] == arr[i][j + 2]) {
+				temp = Random_Color_generator();
+				arr[i][j] = temp;
+				temp = Random_Color_generator();
+				arr[i][j + 1] = temp;
+				temp = Random_Color_generator();
+				arr[i][j + 2] = temp;
+				counter++;
+			}
+			//FOR VERTICAL
+			if (arr[i][j] == arr[i + 1][j] && arr[i + 1][j] == arr[i + 2][j]) {
+				temp = Random_Color_generator();
+				arr[i][j] = temp;
+				temp = Random_Color_generator();
+				arr[i + 1][j] = temp;
+				temp = Random_Color_generator();
+				arr[i + 2][j] = temp;
+				counter++;
+			}
+		}
+	}
+	update(arr, score);
+	Color(7);
+	return counter;
+}
+
+int numbertoindexrow(int num) {
+	return (num / 8);
+}
+int numbertoindexcol(int num) {
+	return ((num - (numbertoindexrow(num) * 8)) - 1);
+}
+
+//int Title() {
+//	int option;
+//	cout << "			---------------------------------------------\n";
+//	cout << "			|		"; Color(4); cout << candy; Color(7); cout << "CANDY CRUSH"; Color(4); cout << candy; Color(7); cout << "		    | \n";
+//	cout << "			---------------------------------------------\n\n\n";
+//	cout << "1.  Start Game\n";
+//	cout << "2.  Instructions\n";
+//	cout << "3.  Exit\n\n";
+//	cin >> option;
+//	system("CLS");
+//	return option;
+//}
+
+void instructions() {
+	Color(07);
+	cout << "			-----------------------------------------------------\n";
+	cout << "			|		"; Color(4); cout << candy; Color(7); cout << "C A N D Y   C R U S H"; Color(4); cout << candy; Color(7); cout << "		    | \n";
+	cout << "			-----------------------------------------------------\n\n\n";
+	cout << "1. You have to combine 3 same colored jellies to destroy them.\n";
+	cout << "2. Numbers are allocated to each cell.\n";
+	cout << "3. Enter 2 numbers seperated by space to swap them.\n";
+	cout << "4. Score 100 to Win!\n";
+	cout << "5. Enjoy!\n";
+	Sleep(7000);
+}
+
+int main() {
+	int score = 0;
+	int num1 = 0;
+	int num2 = 0;
+
+	system("CLS");
+	instructions();
+		
+			//INITIALZING CANDIES
+			int temp, number = 1;
+			int arr[8][8];
+			for (int i = 0; i < 8; i++) {
+				for (int j = 0; j < 8; j++) {
+					temp = Random_Color_generator();
+					arr[i][j] = temp;
+					Color(temp);
+					cout << candy << candy << number++ << "     ";
+				}
+				cout << endl << endl;
+			}
+			check(arr, score);
+			//Taking User Input for swapping
+	
+			while (score<100) {
+			
+				cout << "Enter Numbers of cells to swap: " << endl;
+				cout << "Locations : "; cin >> num1;
+				if (num1 == -1)
+				{
+					break;
+				}
+				cin >> num2;
+				if (num2 == -1)
+				{
+					break;
+				}
+				if (num1 >= 1 && num1 <= 64 && num2 >= 1 && num2 <= 64 && num1 != num2 && (((num1 - 8) == num2) || ((num1 + 1) == num2) || ((num1 + 8) == num2) || ((num1 - 1) == num2))) {
+					swap(arr[numbertoindexrow(num1)][numbertoindexcol(num1)], arr[numbertoindexrow(num2)][numbertoindexcol(num2)]);
+					if (check(arr, score) == 0) {
+						swap(arr[numbertoindexrow(num1)][numbertoindexcol(num1)], arr[numbertoindexrow(num2)][numbertoindexcol(num2)]);
+						cout << "Incorrect Combination!\n";
+					}
+					else {
+						score = score + 10;
+						Beep(500, 300);
+						check(arr, score);
+					}
+
+				}
+				else {
+					system("CLS");
+					cout << "The Numbers you entered are incorrect!\n";
+					cout << "1) Both Numbers should not be equal.\n";
+					cout << "2) Both Numbers should be between 1 - 64.\n";
+					cout << "3) Both Numbers should be next to each other.\n\n";
+					cout << "Try Again! ";
+					Sleep(2000);
+					system("CLS");
+					update(arr, score);
+				}
+			}
+			if (score >= 100) {
+				system("CLS");
+				Color(3);
+				cout << "_________________________________________________________\n";
+				cout << "\n\n\n\n	"; cout << candy; cout << " C O N G R A T U L A T I O N S! "; Color(3); cout << candy; cout << "\n\n		You Won!\n\n\n\n\n";
+				cout << "_________________________________________________________\n\n\n\n\n\n";
+				Color(7);
+			}
+			else
+			{
+				system("CLS");
+				cout << "_________________________________________________________\n";
+				cout << "\n\n\n\n	G A M E   O V E R! \n\n      Better Luck Next Time!\n\n\n\n\n";
+				cout << "_________________________________________________________\n\n\n\n\n\n";
+
+			}
+			return 0;
+		
+		
+		
+	
+}
